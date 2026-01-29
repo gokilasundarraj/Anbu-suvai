@@ -50,7 +50,7 @@ export default function DeliveryManOrders() {
   };
 
   const verifyOTP = async (order) => {
-    if (otpInput[order.id] === order.otp) {
+    if (parseInt(otpInput[order.id]) === parseInt(order.otp)) {
       await updateDoc(doc(db, "orders", order.id), {
         status: "delivered",
         deliveredAt: new Date(),
