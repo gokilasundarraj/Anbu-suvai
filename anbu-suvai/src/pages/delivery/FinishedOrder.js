@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../firebase/firebaseConfig";
-import DeliveryFooter from "../../components/DeliveryFooter"
 
 export default function FinishedOrders() {
   const [orders, setOrders] = useState([]);
