@@ -110,7 +110,7 @@ export default function MyOrders() {
                   <div className="item-details">
                     <p className="item-name">{item.name}</p>
                     <p className="item-price">
-                      {item.qty} × ₹{item.price}
+                      {item.qty} × ₹{item.price * item.qty}
                     </p>
                   </div>
                 </div>

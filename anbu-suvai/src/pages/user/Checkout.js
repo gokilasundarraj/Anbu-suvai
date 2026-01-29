@@ -71,7 +71,7 @@ export default function Checkout() {
 
   const placeOrder = async () => {
     if (!address || !lat || !lng) {
-      alert("Location select pannu bro");
+      alert("Location select Must");
       return;
     }
 
