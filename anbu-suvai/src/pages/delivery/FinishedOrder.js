@@ -66,7 +66,7 @@ export default function FinishedOrders() {
           </div>
         </div>
       ))}
-      <DeliveryFooter/>
+      
     </div>
   );
 }
