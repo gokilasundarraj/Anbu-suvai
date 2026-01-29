@@ -34,6 +34,7 @@ export const CartProvider = ({ children }) => {
     await setDoc(ref, { items: updatedCart }, { merge: true });
   };
 
+
   const addToCart = (food) => {
     setCart((prev) => {
       const exists = prev.find((i) => i.id === food.id);
@@ -59,6 +60,21 @@ export const CartProvider = ({ children }) => {
     });
   };
 
+
+  const decreaseQty = (id) => {
+    setCart((prev) => {
+      const updatedCart = prev
+        .map((i) =>
+          i.id === id ? { ...i, qty: i.qty - 1 } : i
+        )
+        .filter((i) => i.qty > 0);
+
+      syncCart(updatedCart);
+      return updatedCart;
+    });
+  };
+
+
   const removeFromCart = (id) => {
     setCart((prev) => {
       const updated = prev.filter((i) => i.id !== id);
@@ -74,7 +90,14 @@ export const CartProvider = ({ children }) => {
 
   return (
     <CartContext.Provider
-      value={{ cart, addToCart, removeFromCart, clearCart, loading }}
+      value={{
+        cart,
+        addToCart,
+        decreaseQty,
+        removeFromCart,
+        clearCart,
+        loading,
+      }}
     >
       {children}
     </CartContext.Provider>

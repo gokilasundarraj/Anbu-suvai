@@ -1,4 +1,4 @@
-import { useContext,useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { CartContext } from "../../context/CartContext";
 import { useNavigate } from "react-router-dom";
 import UserNav from "../../components/UserNav";
@@ -8,27 +8,29 @@ export default function Cart() {
   const { cart, removeFromCart } = useContext(CartContext);
   const navigate = useNavigate();
 
-  const [qtyMap, setQtyMap] = useState(
-    cart.reduce((acc, item) => {
-      acc[item.id] = item.qty || 1;
-      return acc;
-    }, {})
-  );
+  const [qtyMap, setQtyMap] = useState({});
+
+  useEffect(() => {
+    const map = {};
+    cart.forEach((item) => {
+      map[item.id] = item.qty || 1;
+    });
+    setQtyMap(map);
+  }, [cart]);
 
   const increaseQty = (id) => {
-  setQtyMap((prev) => ({
-    ...prev,
-    [id]: prev[id] + 1,
-  }));
-};
+    setQtyMap((prev) => ({
+      ...prev,
+      [id]: prev[id] + 1,
+    }));
+  };
 
-const decreaseQty = (id) => {
-  setQtyMap((prev) => ({
-    ...prev,
-    [id]: prev[id] > 1 ? prev[id] - 1 : 1,
-  }));
-};
-
+  const decreaseQty = (id) => {
+    setQtyMap((prev) => ({
+      ...prev,
+      [id]: prev[id] > 1 ? prev[id] - 1 : 1,
+    }));
+  };
 
   if (!cart || cart.length === 0) {
     return (
@@ -42,24 +44,24 @@ const decreaseQty = (id) => {
   return (
     <div className="cart-page">
       <UserNav />
-
       <h2 className="cart-title">CART</h2>
 
       <div className="cart-list">
         {cart.map((item) => (
           <div className="cart-item" key={item.id}>
-            
             <img src={item.image} alt={item.name} />
 
             <div className="cart-details">
               <h3>{item.name}</h3>
-              <p>₹{item.price * qtyMap[item.id]}</p>
-              <div className="qty-box">
-                  <button onClick={() => decreaseQty(item.id)}>-</button>
-                  <span>{qtyMap[item.id]}</span>
-                  <button onClick={() => increaseQty(item.id)}>+</button>
-              </div>
 
+        
+              <p>₹{item.price * qtyMap[item.id]}</p>
+
+              <div className="qty-box">
+                <button onClick={() => decreaseQty(item.id)}>-</button>
+                <span>{qtyMap[item.id]}</span>
+                <button onClick={() => increaseQty(item.id)}>+</button>
+              </div>
             </div>
 
             <div className="cart-actions">
@@ -74,7 +76,9 @@ const decreaseQty = (id) => {
                 className="buy-btn"
                 onClick={() =>
                   navigate("/checkout", {
-                    state: { singleItem: {...item,qty:qtyMap[item.id]} },
+                    state: {
+                      singleItem: { ...item, qty: qtyMap[item.id] },
+                    },
                   })
                 }
               >
@@ -84,7 +88,8 @@ const decreaseQty = (id) => {
           </div>
         ))}
       </div>
-      <Footer/>
+
+      <Footer />
     </div>
   );
 }
