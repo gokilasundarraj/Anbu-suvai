@@ -1,16 +1,32 @@
 import { createContext, useEffect, useState } from "react";
 import { doc, setDoc, getDoc } from "firebase/firestore";
-import { db } from "../firebase/firebaseConfig";
+import { onAuthStateChanged } from "firebase/auth";
+import { db, auth } from "../firebase/firebaseConfig";
 
 export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
+  const [userId, setUserId] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const userId = "demoUser123";
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserId(user.uid);
+      } else {
+        setUserId(null);
+        setCart([]);
+        setLoading(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
+    if (!userId) return;
+
     const loadCart = async () => {
       try {
         const ref = doc(db, "userCart", userId);
@@ -18,6 +34,8 @@ export const CartProvider = ({ children }) => {
 
         if (snap.exists()) {
           setCart(snap.data().items || []);
+        } else {
+          setCart([]);
         }
       } catch (err) {
         console.error("Load cart error:", err);
@@ -27,39 +45,27 @@ export const CartProvider = ({ children }) => {
     };
 
     loadCart();
-  }, []);
+  }, [userId]);
 
   const syncCart = async (updatedCart) => {
+    if (!userId) return;
     const ref = doc(db, "userCart", userId);
     await setDoc(ref, { items: updatedCart }, { merge: true });
   };
 
-
   const addToCart = (food) => {
     setCart((prev) => {
       const exists = prev.find((i) => i.id === food.id);
-      let updatedCart;
-
-      if (exists) {
-        updatedCart = prev.map((i) =>
-          i.id === food.id ? { ...i, qty: i.qty + 1 } : i
-        );
-      } else {
-        updatedCart = [
-          ...prev,
-          {
-            ...food,
-            price: Number(food.price),
-            qty: 1,
-          },
-        ];
-      }
+      const updatedCart = exists
+        ? prev.map((i) =>
+            i.id === food.id ? { ...i, qty: i.qty + 1 } : i
+          )
+        : [...prev, { ...food, price: Number(food.price), qty: 1 }];
 
       syncCart(updatedCart);
       return updatedCart;
     });
   };
-
 
   const decreaseQty = (id) => {
     setCart((prev) => {
@@ -73,7 +79,6 @@ export const CartProvider = ({ children }) => {
       return updatedCart;
     });
   };
-
 
   const removeFromCart = (id) => {
     setCart((prev) => {
