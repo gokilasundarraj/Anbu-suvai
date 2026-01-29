@@ -12,7 +12,10 @@ export default function UserHome() {
 
   const navigate = useNavigate();
 
-  const fetchFoods = async () => {
+  
+  useEffect(() => {
+    
+    const fetchFoods = async () => {
     try {
       let q;
 
@@ -44,7 +47,7 @@ export default function UserHome() {
     }
   };
 
-  useEffect(() => {
+
     fetchFoods();
   }, [activeCategory, search]);
 
