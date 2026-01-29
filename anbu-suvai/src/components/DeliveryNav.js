@@ -18,7 +18,7 @@ export default function DeliveryNav() {
       <nav className="delivery-nav">
         
         <div className="nav-left">
-          <img src={Logo} alt="" style={{borderRadius:"50%"}} />
+          <img src={Logo} alt="logo" style={{borderRadius:"50%"}} />
         </div>
 
         <div className="nav-right">

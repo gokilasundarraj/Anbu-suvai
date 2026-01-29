@@ -16,7 +16,7 @@ export default function AdminNav() {
     <>
      
       <div className="admin-nav">
-        <img src={Logo} />
+        <img src={Logo} alt="logo" />
 
         <div className="menu-icon"  onClick={() => setOpen(true)}>
           ☰

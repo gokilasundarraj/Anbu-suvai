@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import Logo from '../img/logo.png'
 import {
   FaBars,
-  FaTimes,
   FaUserCircle
 } from "react-icons/fa";
 
@@ -45,7 +44,7 @@ export default function UserNav() {
       
       <nav className="user-nav">
         <div className="nav-left">
-          <img src={Logo} alt=""/>
+          <img src={Logo} alt="logo"/>
         </div>
 
         <div className="nav-right">
