@@ -1,36 +1,18 @@
-import { useContext, useState, useEffect } from "react";
+import { useContext } from "react";
 import { CartContext } from "../../context/CartContext";
 import { useNavigate } from "react-router-dom";
 import UserNav from "../../components/UserNav";
 import Footer from "../../components/Footer";
 
 export default function Cart() {
-  const { cart, removeFromCart } = useContext(CartContext);
+  const {
+    cart,
+    addToCart,
+    decreaseQty,
+    removeFromCart,
+  } = useContext(CartContext);
+
   const navigate = useNavigate();
-
-  const [qtyMap, setQtyMap] = useState({});
-
-  useEffect(() => {
-    const map = {};
-    cart.forEach((item) => {
-      map[item.id] = item.qty || 1;
-    });
-    setQtyMap(map);
-  }, [cart]);
-
-  const increaseQty = (id) => {
-    setQtyMap((prev) => ({
-      ...prev,
-      [id]: prev[id] + 1,
-    }));
-  };
-
-  const decreaseQty = (id) => {
-    setQtyMap((prev) => ({
-      ...prev,
-      [id]: prev[id] > 1 ? prev[id] - 1 : 1,
-    }));
-  };
 
   if (!cart || cart.length === 0) {
     return (
@@ -54,13 +36,12 @@ export default function Cart() {
             <div className="cart-details">
               <h3>{item.name}</h3>
 
-        
-              <p>₹{item.price * qtyMap[item.id]}</p>
+              <p>₹{item.price * item.qty}</p>
 
               <div className="qty-box">
                 <button onClick={() => decreaseQty(item.id)}>-</button>
-                <span>{qtyMap[item.id]}</span>
-                <button onClick={() => increaseQty(item.id)}>+</button>
+                <span>{item.qty}</span>
+                <button onClick={() => addToCart(item)}>+</button>
               </div>
             </div>
 
@@ -77,7 +58,7 @@ export default function Cart() {
                 onClick={() =>
                   navigate("/checkout", {
                     state: {
-                      singleItem: { ...item, qty: qtyMap[item.id] },
+                      singleItem: item,
                     },
                   })
                 }
